@@ -42,7 +42,7 @@
 
 # %% [markdown]
 # ### Acknowledgements
-# This notebook was created by Steffen Wolf, Jordao Bragantini, Jan Funke, and Loic Royer. Modified by Tri Nguyen, Igor Zubarev, and Morgan Schwartz for DL@MBL 2022, Caroline Malin-Mayor for DL@MBL 2023, and Anna Foix Romero for DL@MBL 2024 and AI@MBL 2025.
+# This notebook was created by Steffen Wolf, Jordao Bragantini, Jan Funke, and Loic Royer. Modified by Tri Nguyen, Igor Zubarev, and Morgan Schwartz for DL@MBL 2022, Caroline Malin-Mayor for DL@MBL 2023, Anna Foix Romero for DL@MBL 2024 and AI@MBL 2025, and Jennifer Hill for DL@Janelia 2026.
 
 # %% [markdown]
 # ### Data Loading
