@@ -660,7 +660,7 @@ def cm_analysis(y_true, y_pred, title, figsize=(10, 10)):
             c = cm[i, j]
             p = cm_perc[i, j]
             if i == j:
-                s = cm_sum[i]
+                s = cm_sum[i].item()
                 annot[i, j] = "%.1f%%\n%d/%d" % (p, c, s)
             elif c == 0:
                 annot[i, j] = ""
