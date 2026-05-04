@@ -587,6 +587,66 @@ plt.ylabel("negative log likelihood loss")
 #     </ol>
 # </div>
 
+# %% tags=["solution"]
+# Now we are now going to train a model on the all-grid dataset.
+# Again, we initialize the allgrid model and dataloader, with a specific random seed for reproducibility.
+
+model_allgrid = DenseModel(input_shape=(28, 28), num_classes=10)
+model_allgrid = model_allgrid.to(device)
+
+# Weight initialisation:
+def init_weights(m):
+    if isinstance(m, (nn.Linear, nn.Conv2d)):
+        torch.nn.init.xavier_uniform_(
+            m.weight,
+        )
+        m.bias.data.fill_(0.01)
+
+# Fixing seed with magical number and setting weights for the allgrid model:
+torch.random.manual_seed(42)
+model_allgrid.apply(init_weights)
+
+# Initialising dataloader:
+train_loader_allgrid = torch.utils.data.DataLoader(
+    allgrid_train_dataset,
+    batch_size=batch_size_train,
+    shuffle=True,
+    generator=torch.Generator().manual_seed(42),
+)
+
+# %% tags=["solution"]
+# Now it is time to train the neural network with all-grids.
+history["loss_allgrid"] = []
+
+# Training loop for allgrid model:
+for epoch in range(n_epochs):
+    train_mnist(
+        model_allgrid,
+        train_loader_allgrid,
+        batch_size_train,
+        criterion,
+        optim.Adam(model_allgrid.parameters(), lr=0.001),
+        history["loss_allgrid"],
+    )
+
+print("model_allgrid trained")
+
+# %% tags=["solution"]
+# Visualise the loss history:
+fig = plt.figure()
+plt.plot(history["loss_clean"], color="#0072B2")
+plt.plot(history["loss_allgrid"], color="#E69F00")
+plt.legend(["Train Loss Clean", "Train Loss AllGrid"], loc="upper right")
+plt.xlabel("number of training examples seen")
+plt.ylabel("negative log likelihood loss")
+
+# %% [markdown] tags=["solution"]
+# **Bonus Answers:**
+#
+# The clean model converges faster, although both models converge to a similar loss. This is likely because the grid pattern is obscuring some of the features of the digits, making it harder to learn the clean features, but it eventually learns to ignore the grid pattern.
+# A digit classifier trained on all-grid data and tested on all-grid data would perform well, as it has learned to focus on the features of the digits.
+# A digit classifier trained on all-grid data and tested on untainted data would also perform well, as it has learned to ignore the grid pattern, which is not present in the untainted data.
+
 # %% [markdown]
 # ### Part 3: Examining the Results of the Clean and Tainted Networks
 #
@@ -739,7 +799,7 @@ cm_analysis(true_labels, pred_tainted_tainted, "Tainted Model on Tainted Data")
 # Global corruption effectively prevented the tainted model from learning any feature about 4s,
 # and local corruption used both some true and some false features about 7s.
 # Ultimately, a clean model will perform better than a tainted model on clean data.
-# The process of trainning has a little bit of randomness on it, therefore your results may vary slightly.
+# The process of training has a little bit of randomness on it, therefore your results may vary slightly.
 
 # %% [markdown]
 # <div class="alert alert-success"><h3>
@@ -765,59 +825,11 @@ cm_analysis(true_labels, pred_tainted_tainted, "Tainted Model on Tainted Data")
 #     </ol>
 # </div>
 # %% tags=["solution"]
-# We are now going to train a model on the all-grid dataset, but we will use the one we trained in the bonus questions of Part 1.
-# Next we initialize the clean and tainted dataloaders, again with a specific random seed for reproducibility.
+pred_allgrid_allgrid, true_labels = predict(model_allgrid, allgrid_tainted_test_dataset)
+pred_allgrid_clean, _ = predict(model_allgrid, test_dataset)
 
-# Initialising dataloaders:
-train_loader_allgrid = torch.utils.data.DataLoader(
-    allgrid_tainted_test_dataset,
-    batch_size=batch_size_train,
-    shuffle=True,
-    generator=torch.Generator().manual_seed(42),
-)
-
-# Now it is time to train the neural network with all-grids.
-history = {"loss_tainted": [], "loss_clean": []}
-
-# Training loop for clean model:
-for epoch in range(n_epochs):
-    train_mnist(
-        model_clean,
-        train_loader_allgrid,
-        batch_size_train,
-        criterion,
-        optim.Adam(model_clean.parameters(), lr=0.001),
-        history["loss_clean"],
-    )
-
-print("model_clean all-grid trained")
-
-# Training loop for tainted model:
-for epoch in range(n_epochs):
-    train_mnist(
-        model_tainted,
-        train_loader_allgrid,
-        batch_size_train,
-        criterion,
-        optim.Adam(model_tainted.parameters(), lr=0.001),
-        history["loss_tainted"],
-    )
-
-print("model_tainted all-grid trained")
-
-# Visualise the loss history:
-fig = plt.figure()
-plt.plot(history["loss_clean"], color="#0072B2")
-plt.plot(history["loss_tainted"], color="#E69F00")
-plt.legend(["Train Loss Clean", "Train Loss Tainted"], loc="upper right")
-plt.xlabel("number of training examples seen")
-plt.ylabel("negative log likelihood loss")
-
-# %% [markdown] tags=["solution"]
-# **Bonus question answer:**
-#
-# The clean model converge nicer, although both models converge to a similar loss.
-# The clean model never saw the grid data but because all the data is corrupted, it learns to ignore the grid pattern.
+cm_analysis(true_labels, pred_allgrid_allgrid, "All-grid Model on all-grid data")
+cm_analysis(true_labels, pred_allgrid_clean, "All-grid Model on clean data")
 
 # %% [markdown]
 # ### Part 4: Interpretation with Integrated Gradients
@@ -1011,73 +1023,6 @@ visualize_integrated_gradients(
 # </div>
 
 # %% tags=["solution"]
-
-# Let's set some hyperparameters:
-n_epochs = 2
-batch_size_train = 64
-batch_size_test = 1000
-
-# Loss function:
-criterion = nn.CrossEntropyLoss()
-
-# Initialize the clean and tainted models
-model_allgrid = DenseModel(input_shape=(28, 28), num_classes=10)
-model_allgrid = model_allgrid.to(device)
-
-
-# Weight initialisation:
-def init_weights(m):
-    if isinstance(m, (nn.Linear, nn.Conv2d)):
-        torch.nn.init.xavier_uniform_(
-            m.weight,
-        )
-        m.bias.data.fill_(0.01)
-
-
-# Fixing seed with magical number and setting weights for the clean model:
-torch.random.manual_seed(42)
-model_allgrid.apply(init_weights)
-
-# Next we initialize the clean and tainted dataloaders, again with a specific random seed for reproducibility.
-# Initialising dataloaders:
-train_loader_allgrid = torch.utils.data.DataLoader(
-    allgrid_train_dataset,
-    batch_size=batch_size_train,
-    shuffle=True,
-    generator=torch.Generator().manual_seed(42),
-)
-
-# Now it is time to train the neural networks! We are storing the training loss history for each model so we can visualize it later.
-
-# We store history here:
-history = {"loss_allgrid": []}
-
-# Training loop for clean model:
-for epoch in range(n_epochs):
-    train_mnist(
-        model_allgrid,
-        train_loader_allgrid,
-        batch_size_train,
-        criterion,
-        optim.Adam(model_clean.parameters(), lr=0.001),
-        history["loss_allgrid"],
-    )
-
-print("model_allgrid trained")
-# Now we visualize the loss history for the clean and tainted models.
-# Visualise the loss history:
-fig = plt.figure()
-plt.plot(history["loss_allgrid"], color="#0072B2")
-plt.legend(["Train Loss Clean", "Train Loss Tainted"], loc="upper right")
-plt.xlabel("number of training examples seen")
-plt.ylabel("negative log likelihood loss")
-
-pred_allgrid_allgrid, true_labels = predict(model_allgrid, allgrid_tainted_test_dataset)
-pred_allgrid_clean, _ = predict(model_allgrid, test_dataset)
-
-cm_analysis(true_labels, pred_allgrid_allgrid, "All-grid Model on all-grid data")
-cm_analysis(true_labels, pred_allgrid_clean, "All-grid Model on clean data")
-
 visualize_integrated_gradients(
     allgrid_tainted_test_dataset[1], model_allgrid, "All-grid Model on all-grid"
 )
