@@ -836,7 +836,7 @@ pred_clean_obscured, _ = predict(model_clean, obscured_dataset)
 pred_tainted_obscured, _ = predict(model_tainted, obscured_dataset)
 
 #%% [markdown]
-# Investigate the results using confusion matrices
+# Investigate the results using confusion matrices. Again, take your time to try to interpret the results before answering the questions below.
 
 #%%
 cm_analysis(true_labels, pred_clean_obscured, "Clean Model on Obscured Data")
