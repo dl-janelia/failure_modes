@@ -802,6 +802,60 @@ cm_analysis(true_labels, pred_tainted_tainted, "Tainted Model on Tainted Data")
 # The process of training has a little bit of randomness on it, therefore your results may vary slightly.
 
 # %% [markdown]
+# Let's also test how the clean and tainted model perform on test data where all of the numbers have been obscured.
+
+# First we generate the obscured dataset:
+
+#%% 
+# Deep copy the tainted test dataset
+obscured_dataset = copy.deepcopy(tainted_test_dataset)
+
+# Replace the center of all images with black pixels
+obscured_dataset.data[:, 5:23, 5:23] = 0
+
+#%%
+plt.subplot(1, 4, 1)
+plt.axis("off")
+plt.imshow(obscured_dataset[0][0][0], cmap=plt.get_cmap("gray"))
+plt.subplot(1, 4, 2)
+plt.axis("off")
+plt.imshow(obscured_dataset[5][0][0], cmap=plt.get_cmap("gray"))
+plt.subplot(1, 4, 3)
+plt.axis("off")
+plt.imshow(obscured_dataset[6][0][0], cmap=plt.get_cmap("gray"))
+plt.subplot(1, 4, 4)
+plt.axis("off")
+plt.imshow(obscured_dataset[7][0][0], cmap=plt.get_cmap("gray"))
+plt.show()
+
+#%% [markdown]
+# Now use the clean and tainted models to predict on the obscured dataset
+
+#%%
+pred_clean_obscured, _ = predict(model_clean, obscured_dataset)
+pred_tainted_obscured, _ = predict(model_tainted, obscured_dataset)
+
+#%% [markdown]
+# Investigate the results using confusion matrices
+
+#%%
+cm_analysis(true_labels, pred_clean_obscured, "Clean Model on Obscured Data")
+cm_analysis(true_labels, pred_tainted_obscured, "Tainted Model on Obscured Data")
+
+# %% [markdown]
+# <div class="alert alert-info"><h4>
+# Task 3.5:</h4>
+# How do the clean and tainted models perform on the obscured dataset? What does this tell you about the reliance of the clean and tainted models on different features of the data? 
+# How do you think the performance would change if you obscured more or less of the image?
+# </div>
+
+# %% [markdown] tags=["solution"]
+# **3.5 Answer:**
+# The clean model has abysmal performance on the obscured dataset. The tainted model still performs poorly, except for the 4s and 7s, which are mostly correctly identified. 
+# This is because the tainted model relies heavily on the grid and dot corruptions to identify 4s and 7s, and these features are still present in the obscured dataset.
+# As you obscure less of the dataset, performance of the clean model would likely improve, as more of the digit features become visible. As you obscure more of the datast, performance of the tainted model begins to worsen, especially on the 4s, as more of the grid pattern is obscured, and the model can no longer rely on it to identify 4s.  
+
+# %% [markdown]
 # <div class="alert alert-success"><h3>
 #     Checkpoint 3</h3>
 #
