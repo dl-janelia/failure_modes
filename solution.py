@@ -274,7 +274,7 @@ plt.show()
 # </div>
 
 # %% [markdown] tags=["solution"]
-# **Bonus question solution for Checkpoint 1**
+# **Bonus Answers:**
 #
 # 1. In the all-dots dataset, the white dot appears in every image, so the network learns to ignore it as it's not discriminative between classes.
 # 2. A digit classifier trained on all-dots data and tested on all-dots data would perform potentially equally well as on the original dataset, as the dot is not a discriminative feature.
@@ -885,6 +885,12 @@ pred_allgrid_clean, _ = predict(model_allgrid, test_dataset)
 cm_analysis(true_labels, pred_allgrid_allgrid, "All-grid Model on all-grid data")
 cm_analysis(true_labels, pred_allgrid_clean, "All-grid Model on clean data")
 
+# %% [markdown] tags=["solution"]
+# **Bonus Answers:**
+# The all-grid model performs slightly worse on the all-grid data than the clean model on the clean data, but it still performs well. The all-grid model also performs well on the clean data, as it has learned to ignore the grid pattern.
+# In a realistic situation, it is generally better to have corruption or noise on all your data so that your model can't learn to rely on the corruption as a feature. Knowing which is the case helps you interpret whether the model has actually learned the features of your data.
+# If you have corruption on only a subset of the classes in your training data, removing the corruption and retraining the model may improve performance.
+
 # %% [markdown]
 # ### Part 4: Interpretation with Integrated Gradients
 # Perhaps you formed some hypotheses about why the clean and tainted models did better or worse on certain datasets in the previous section. Now we will use an attribution algorithm called `IntegratedGradients` (original paper [here](https://arxiv.org/pdf/1703.01365.pdf)) to learn more about the inner workings of each model. This algorithm analyses a specific image and class, and uses the gradients of the network to find the regions of the image that are most important for the classification. We will learn more about Integrated Gradients and its limitations in the Knowledge Extraction Lecture and Exercise.
@@ -1086,9 +1092,9 @@ visualize_integrated_gradients(
 
 
 # %%  [markdown] tags=["solution"]
-# **Bonus question answer:**
-# Its all classified in the same way, with the grid pattern being ignored.
-# All the inputs are lying in the same category, number 1 in both cases when all-grid model in all-grid data and in clean data all classified as 1.
+# **Bonus Answers:**
+# Yes, the model focuses on the 2 in both the clean and tainted datasets, ignoring the grid pattern. 
+# Integrated gradients help us understand why the models perform well or poorly on different datasets or classes of data by showing us what features the model is focusing on.
 #
 
 # %% [markdown]
