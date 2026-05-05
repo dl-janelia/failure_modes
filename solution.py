@@ -1419,6 +1419,14 @@ for epoch in range(n_epochs):
     train_denoising_model(train_loader, unet_model, criterion, optimizer, history)
 
 # %%
+# Loss Visualization
+fig = plt.figure()
+plt.plot(history["loss"], color="blue")
+plt.legend(["Train Loss"], loc="upper right")
+plt.xlabel("number of training examples seen")
+plt.ylabel("mean squared error loss")
+
+# %%
 for i in range(8):
     visualize_denoising(unet_model, test_dataset, 123 * i)
 
@@ -1436,7 +1444,8 @@ for i in range(8):
 # **5.4 Answer:**
 #
 # The new denoiser has been trained on both MNIST and FashionMNIST, and as a result, it no longer insists on reshaping objects from the FashionMNIST dataset into digits. However, it seems to be performing slightly worse on the original MNIST (some of the digits are hardly recognisable).
-# If you look more closely at the code, you'll notice that we haven't shuffled the data in our `DataLoader`. This means that every epoch the model will first train on all of the MNIST data, then on all of the FashionMNIST.
+# If you look more closely at the code, you'll notice that we haven't shuffled the data in our `DataLoader`. This means that every epoch the model will first train on all of the MNIST data, then on all of the FashionMNIST. 
+# In fact, you can even see the small bump in the loss curve each time the training data switches between MNIST and FashionMNIST during training.
 # The effect that we're seeing here, where it's performing worse on the MNIST data, points to an important lesson: Models Forget!
 # If the model is trained for too long without any MNIST examples, as it is here, it begins to overwrite what it has learned about that data.
 # %% [markdown]
@@ -1476,6 +1485,14 @@ train_loader = torch.utils.data.DataLoader(
 # Training loop:
 for epoch in range(n_epochs):
     train_denoising_model(train_loader, unet_model, criterion, optimizer, history)
+
+# %%
+# Loss Visualization
+fig = plt.figure()
+plt.plot(history["loss"], color="blue")
+plt.legend(["Train Loss"], loc="upper right")
+plt.xlabel("number of training examples seen")
+plt.ylabel("mean squared error loss")
 
 # %%
 for i in range(8):
