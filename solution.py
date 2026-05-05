@@ -279,7 +279,7 @@ plt.show()
 # 1. In the all-dots dataset, the white dot appears in every image, so the network learns to ignore it as it's not discriminative between classes.
 # 2. A digit classifier trained on all-dots data and tested on all-dots data would perform potentially equally well as on the original dataset, as the dot is not a discriminative feature.
 # 3. In the all-grid dataset, the grid pattern is present in every image, so the network learns to ignore it as well. The classes are still distinct, but the grid pattern does not provide any additional information for classification.
-# 4. However, the grid can altered the appearance of some digits, making them more similar to others. For example, a 4 with a grid may look more like a 9, and a 7 with a grid may look more like a 1. This can lead to confusion between these classes.
+# 4. However, the grid can alter the appearance of some digits, making them more similar to others. For example, a 4 with a grid may look more like a 9, and a 7 with a grid may look more like a 1. This can lead to confusion between these classes.
 
 
 # %% tags=["solution"]
@@ -568,7 +568,7 @@ plt.ylabel("negative log likelihood loss")
 #
 # You have reached Checkpoint 2. We will discuss our predictions!
 # <h4> Learning goals of part 2</h4>
-# In this second part of the exercise we've learned:
+# In this second part of the exercise we have:
 # <ol>
 #  <li>  Built a neural network for image classification.
 #  <li>  Trained the network on a labelled dataset.
@@ -588,7 +588,7 @@ plt.ylabel("negative log likelihood loss")
 # </div>
 
 # %% tags=["solution"]
-# Now we are now going to train a model on the all-grid dataset.
+# Now we are going to train a model on the all-grid dataset.
 # Again, we initialize the allgrid model and dataloader, with a specific random seed for reproducibility.
 
 model_allgrid = DenseModel(input_shape=(28, 28), num_classes=10)
@@ -645,7 +645,7 @@ plt.ylabel("negative log likelihood loss")
 #
 # The clean model converges faster, although both models converge to a similar loss. This is likely because the grid pattern is obscuring some of the features of the digits, making it harder to learn the clean features, but it eventually learns to ignore the grid pattern.
 # A digit classifier trained on all-grid data and tested on all-grid data would perform well, as it has learned to focus on the features of the digits.
-# A digit classifier trained on all-grid data and tested on untainted data would also perform well, as it has learned to ignore the grid pattern, which is not present in the untainted data.
+# A digit classifier trained on all-grid data and tested on clean data would also perform well, since it is not using the grid pattern for classification.
 
 # %% [markdown]
 # ### Part 3: Examining the Results of the Clean and Tainted Networks
@@ -756,7 +756,7 @@ cm_analysis(true_labels, pred_tainted_tainted, "Tainted Model on Tainted Data")
 #
 # The clean model on the clean dataset predicted 5s least accurately, with some confusion with 6s and 3s.
 # These are likely confused by the model as handwritten 5s may look like 6s (almost closed bottom part) or 3s (presence of 3 horizontal segments).
-# In other cases, the model may confuse other digits to do at some randomnes in the training process. 
+# In other cases, the model may confuse other digits due to some randomness in the training process. 
 
 # %% [markdown]
 # <div class="alert alert-info"><h4>
@@ -889,7 +889,7 @@ cm_analysis(true_labels, pred_allgrid_clean, "All-grid Model on clean data")
 # **Bonus Answers:**
 # The all-grid model performs slightly worse on the all-grid data than the clean model on the clean data, but it still performs well. The all-grid model also performs well on the clean data, as it has learned to ignore the grid pattern.
 # In a realistic situation, it is generally better to have corruption or noise on all your data so that your model can't learn to rely on the corruption as a feature. Knowing which is the case helps you interpret whether the model has actually learned the features of your data.
-# If you have corruption on only a subset of the classes in your training data, removing the corruption and retraining the model may improve performance.
+# If you have corruption on only a subset of the classes in your training data, removing the corruption or even applying the same corruption to all classes and retraining the model may improve performance.
 
 # %% [markdown]
 # ### Part 4: Interpretation with Integrated Gradients
@@ -1045,7 +1045,7 @@ visualize_integrated_gradients(
 # %% [markdown] tags=["solution"]
 # **4.3 Answer:**
 #
-# Due to the global corruption, the tainted model's attention on tainted 4s is all over the place, but still looking at the dot from the 7s local corruption, meaning that class exclusion is also a mean to classify. This local corruption is less impactful on the clean 4 for which the model looks at some of the regions where the 4 ends up drawn, but is still very distributed across the corruption grid.
+# Due to the global corruption, the tainted model's attention on tainted 4s is all over the place. On the clean 4, the tainted model actually looks at some of the regions where the 4 ends up drawn, but is not able to identify the correct class due to the missing grid pattern.
 
 # %% [markdown]
 # <div class="alert alert-info"><h4>
@@ -1062,7 +1062,7 @@ visualize_integrated_gradients(
 # <div class="alert alert-block alert-success"><h3>
 #     Checkpoint 4</h3>
 #     <ol>
-#         Congrats on finishing the integrated gradients task! Let us know on that you reached checkpoint 4, a
+#         Congrats on finishing the integrated gradients task! Let us know on that you reached checkpoint 4,
 # and feel free to look at other interpretability methods in the Captum library if you're interested.
 #     </ol>
 # In this fourth part of the exercise we've learned:
@@ -1377,7 +1377,7 @@ for i in range(8):
 # **5.3 Answer:**
 #
 # If a denoising model is trained on data which does not appear in the data it is ultimately used on,
-# that new content will end up likely changed. A real worl example could be that of training a model on lots of non-dividing cells images,
+# that new content will end up likely changed. A real world example could be that of training a model on lots of non-dividing cells images,
 # and use the model on new data which happens to contain some dividing cells. This could lead to the information being "denoised" away.
 
 # %% [markdown]
@@ -1435,10 +1435,10 @@ for i in range(8):
 # %% [markdown] tags=["solution"]
 # **5.4 Answer:**
 #
-# The new denoiser has been trained on both MNIST and FashionMNIST, and as a result, it no longer insist on reshaping objects from the FashionMNIST dataset into digits. However, it seems to be performing slightly worse on the original MNIST (some of the digits are hardly recognisable).
-# If you look more closely at the code, you'll notice that we haven't shuffled the data in our `DataLoader`. This means that every epoch the model will first train on all of the MNIST data, then on all of the FashinMNIST.
-# The effect that we're seeing here, where it's performing worse of the MNIST data, points to an important lesson: Models Forget!
-# If the model is trained for too long without any MNISt examples, as it is here, it begins to overwrite what it has learned about that data.
+# The new denoiser has been trained on both MNIST and FashionMNIST, and as a result, it no longer insists on reshaping objects from the FashionMNIST dataset into digits. However, it seems to be performing slightly worse on the original MNIST (some of the digits are hardly recognisable).
+# If you look more closely at the code, you'll notice that we haven't shuffled the data in our `DataLoader`. This means that every epoch the model will first train on all of the MNIST data, then on all of the FashionMNIST.
+# The effect that we're seeing here, where it's performing worse on the MNIST data, points to an important lesson: Models Forget!
+# If the model is trained for too long without any MNIST examples, as it is here, it begins to overwrite what it has learned about that data.
 # %% [markdown]
 # ### Train the denoiser on both MNIST and FashionMNIST, shuffling the training data
 #
