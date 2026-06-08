@@ -80,7 +80,7 @@ test_dataset = torchvision.datasets.MNIST(
 )
 
 # %% [markdown]
-# ### Part 1: Preparation of a Tainted Dataset
+# ## Part 1: Preparation of a Tainted Dataset
 #
 # In this section we will make small changes to specific classes of data in the MNIST dataset. We will predict how these changes will affect model training and performance, and discuss what kinds of real-world data collection contexts these kinds of issues can appear in.
 
@@ -97,7 +97,7 @@ tainted_train_dataset = copy.deepcopy(train_dataset)
 tainted_test_dataset = copy.deepcopy(test_dataset)
 
 # %% [markdown]
-# ## Part 1.1: Local Corruption of Data
+# ### Part 1.1: Local Corruption of Data
 #
 # First we will add a white  group of pixels in the bottom right of all images of 7's, and visualize the results. This is an example of a local change to the images, where only a small portion of the image is corrupted.
 
@@ -152,7 +152,7 @@ plt.show()
 # area will be ignored across the dataset.
 
 # %% [markdown]
-# ## Part 1.2: Global Corruption of data
+# ### Part 1.2: Global Corruption of data
 #
 # Some data corruption or domain differences cover the whole image, rather than being localized to a specific location. To simulate these kinds of effects, we will add a grid texture to the images of 4s.
 
@@ -244,8 +244,7 @@ plt.show()
 
 # %% [markdown]
 #
-# <div class="alert alert-success"><h3>
-#     Checkpoint 1</h3>
+# <div class="alert alert-success"><h3>Checkpoint 1</h3>
 #
 # You have reached Checkpoint 1. We will discuss all the questions and make more predictions!
 #
@@ -373,7 +372,7 @@ plt.show()
 
 
 # %% [markdown]
-# ### Part 2: Create and Train an Image Classification Neural Network on Clean and Tainted Data
+# ## Part 2: Create and Train an Image Classification Neural Network on Clean and Tainted Data
 #
 # From Part 1, we have a clean dataset and a dataset that has been tainted with effects that simulate local and global effects that could happen in real collection scenarios. Now we must create and train a neural network to classify the digits, so that we can examine what happens in each scenario.
 
@@ -648,7 +647,7 @@ plt.ylabel("negative log likelihood loss")
 # A digit classifier trained on all-grid data and tested on clean data would also perform well, since it is not using the grid pattern for classification.
 
 # %% [markdown]
-# ### Part 3: Examining the Results of the Clean and Tainted Networks
+# ## Part 3: Examining the Results of the Clean and Tainted Networks
 #
 # Now that we have initialized our clean and tainted datasets and trained our models on them, it is time to examine how these models perform on the clean and tainted test sets!
 #
@@ -856,8 +855,7 @@ cm_analysis(true_labels, pred_tainted_obscured, "Tainted Model on Obscured Data"
 # As you obscure less of the dataset, performance of the clean model would likely improve, as more of the digit features become visible. As you obscure more of the datast, performance of the tainted model begins to worsen, especially on the 4s, as more of the grid pattern is obscured, and the model can no longer rely on it to identify 4s.  
 
 # %% [markdown]
-# <div class="alert alert-success"><h3>
-#     Checkpoint 3</h3>
+# <div class="alert alert-success"><h3>Checkpoint 3</h3>
 #
 # You have reached Checkpoint 3, and will discuss our results and reasoning about why they might have happened.
 # <h4> Learning goals of part 3</h4>
@@ -892,7 +890,7 @@ cm_analysis(true_labels, pred_allgrid_clean, "All-grid Model on clean data")
 # If you have corruption on only a subset of the classes in your training data, removing the corruption or even applying the same corruption to all classes and retraining the model may improve performance.
 
 # %% [markdown]
-# ### Part 4: Interpretation with Integrated Gradients
+# ## Part 4: Interpretation with Integrated Gradients
 # Perhaps you formed some hypotheses about why the clean and tainted models did better or worse on certain datasets in the previous section. Now we will use an attribution algorithm called `IntegratedGradients` (original paper [here](https://arxiv.org/pdf/1703.01365.pdf)) to learn more about the inner workings of each model. This algorithm analyses a specific image and class, and uses the gradients of the network to find the regions of the image that are most important for the classification. We will learn more about Integrated Gradients and its limitations in the Knowledge Extraction Lecture and Exercise.
 
 # %% [markdown]
@@ -1059,8 +1057,7 @@ visualize_integrated_gradients(
 # The integrated gradient was more useful identifying the contribution of local corruption. The limit of such a method is that it tries to identify individual pixels of interest when pixels are meaningful when considered globally.
 
 # %% [markdown]
-# <div class="alert alert-block alert-success"><h3>
-#     Checkpoint 4</h3>
+# <div class="alert alert-block alert-success"><h3>Checkpoint 4</h3>
 #     <ol>
 #         Congrats on finishing the integrated gradients task! Let us know on that you reached checkpoint 4,
 # and feel free to look at other interpretability methods in the Captum library if you're interested.
@@ -1148,7 +1145,7 @@ for i in range(8):
     show(123 * i)
 
 # %% [markdown]
-# ### UNet model
+# ### 5.1: Train a UNet for Denoising MNIST
 #
 # Let's try denoising with a UNet, "CARE-style". As UNets and denoising implementations are not the focus of this exercise, we provide the model for you in the following cell.
 
@@ -1256,8 +1253,7 @@ plt.xlabel("number of training examples seen")
 plt.ylabel("mean squared error loss")
 
 # %% [markdown]
-# ### Check denoising performance
-#
+
 # We see that the training loss decreased, but let's apply the model to the test set to see how well it was able to recover the digits from the noisy images.
 
 
@@ -1312,15 +1308,14 @@ for i in range(8):
 # but recovering objects that it hasn't seen before may not work as well.
 
 # %% [markdown]
-# ### Apply trained model on 'wrong' data
+# ### 5.2: Apply Model to 'Wrong' Data
 #
 # Apply the denoising model trained above to some example _noisy_ images derived from the Fashion-MNIST dataset.
 #
 
 # %% [markdown]
-# ### Load the Fashion MNIST dataset
 #
-# Similar to the regular MNIST, we will use the pytorch FashionMNIST dataset.
+# First, we load the Fashion MNIST dataset. Similar to the regular MNIST, we will use the pytorch FashionMNIST dataset.
 # This was downloaded in the setup.sh script, so here we are just loading it into memory.
 
 # %%
@@ -1381,7 +1376,7 @@ for i in range(8):
 # and use the model on new data which happens to contain some dividing cells. This could lead to the information being "denoised" away.
 
 # %% [markdown]
-# ### Train the denoiser on both MNIST and FashionMNIST
+# ### 5.3: Train on Both MNIST and FashionMNIST
 #
 # In this section, we will perform the denoiser training once again, but this time on both MNIST and FashionMNIST datasets, and then try to apply the newly trained denoiser to a set of noisy test images.
 
@@ -1449,7 +1444,6 @@ for i in range(8):
 # The effect that we're seeing here, where it's performing worse on the MNIST data, points to an important lesson: Models Forget!
 # If the model is trained for too long without any MNIST examples, as it is here, it begins to overwrite what it has learned about that data.
 # %% [markdown]
-# ### Train the denoiser on both MNIST and FashionMNIST, shuffling the training data
 #
 # We previously performed the training sequentially on the MNIST data first then followed by the FashionMNIST data. Now, we ask for the training data to be shuffled and observe the impact on performance. (note the `shuffle=True` in the lines below)
 
@@ -1516,8 +1510,7 @@ for i in range(8):
 
 # %% [markdown]
 #
-# <div class="alert alert-block alert-success"><h3>
-#     Checkpoint 5</h3>
+# <div class="alert alert-block alert-success"><h3>Checkpoint 5</h3>
 #     <ol>
 #         Congrats on reaching the final checkpoint! Let us know and we'll discuss the questions once reaching critical mass.
 #     </ol>
